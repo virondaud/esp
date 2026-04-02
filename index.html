@@ -288,6 +288,14 @@
 </style>
 
 <script>
+  // Si déjà connecté, aller directement à l'accueil sans redemander le code
+  if (sessionStorage.getItem('esp_auth') === '1') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    show('accueil');
+    autoLink();
+  }
+
   function login() {
     if (document.getElementById('pwd').value === 'Campbon') {
       sessionStorage.setItem('esp_auth','1');
