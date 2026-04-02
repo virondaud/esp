@@ -4,453 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ESP du Noyer – Maison de Santé de Campbon</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #2c3e50; line-height: 1.65; }
-
-    /* ======================================================
-       ÉCRAN DE CONNEXION
-    ====================================================== */
-    #login-screen {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, #0d3b5e 0%, #1a5c8a 60%, #2980b9 100%);
-      display: flex; align-items: center; justify-content: center; z-index: 9999;
-    }
-    .login-box {
-      background: white; border-radius: 18px; padding: 50px 42px;
-      max-width: 420px; width: 92%; text-align: center;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
-    }
-    .login-logo {
-      width: 82px; height: 82px; background: linear-gradient(135deg,#1a5c8a,#2980b9);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 22px; font-size: 38px; color: white;
-    }
-    .login-box h1 { color: #1a5c8a; font-size: 1.35rem; margin-bottom: 4px; }
-    .login-box h2 { color: #2980b9; font-size: 1rem; font-weight: 500; margin-bottom: 8px; }
-    .login-box .sub { color: #888; font-size: 0.88rem; margin-bottom: 28px; }
-    .login-box input[type="password"] {
-      width: 100%; padding: 13px 18px; border: 2px solid #ddd; border-radius: 9px;
-      font-size: 1.1rem; text-align: center; letter-spacing: 0.2em; outline: none;
-      transition: border-color 0.25s; margin-bottom: 14px; color: #2c3e50;
-    }
-    .login-box input[type="password"]:focus { border-color: #1a5c8a; }
-    .login-btn {
-      width: 100%; padding: 13px; background: #1a5c8a; color: white;
-      border: none; border-radius: 9px; font-size: 1rem; cursor: pointer;
-      font-weight: 700; letter-spacing: 0.03em;
-      transition: background 0.25s, transform 0.1s;
-    }
-    .login-btn:hover { background: #154e7a; transform: translateY(-1px); }
-    .login-error { color: #e74c3c; font-size: 0.88rem; margin-top: 12px; display: none; }
-
-    /* ======================================================
-       APPLICATION
-    ====================================================== */
-    #app { display: none; min-height: 100vh; }
-
-    /* --- Header --- */
-    .site-header {
-      background: linear-gradient(135deg, #1a5c8a, #2980b9);
-      color: white; padding: 18px 30px;
-      display: flex; align-items: center; gap: 18px;
-    }
-    .site-header .hicon { font-size: 2.6rem; }
-    .site-header h1 { font-size: 1.45rem; font-weight: 700; }
-    .site-header .hsub { font-size: 0.88rem; opacity: 0.85; margin-top: 2px; }
-
-    /* --- Navigation --- */
-    .main-nav {
-      background: #154e7a; display: flex; align-items: stretch;
-      position: sticky; top: 0; z-index: 100; flex-wrap: wrap;
-    }
-    .nav-item { position: relative; }
-    .nav-item > a {
-      display: flex; align-items: center; height: 100%;
-      color: rgba(255,255,255,0.9); text-decoration: none;
-      padding: 13px 17px; font-size: 0.92rem; white-space: nowrap;
-      transition: background 0.2s; cursor: pointer; gap: 5px;
-    }
-    .nav-item > a:hover, .nav-item > a.active { background: rgba(255,255,255,0.14); color: white; }
-    .nav-item .dropdown-menu {
-      display: none; position: absolute; top: 100%; left: 0;
-      background: white; min-width: 230px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.15);
-      border-radius: 0 0 10px 10px; overflow: hidden; z-index: 200;
-    }
-    .nav-item:hover .dropdown-menu { display: block; }
-    .dropdown-menu a {
-      display: block; padding: 11px 18px; color: #2c3e50;
-      text-decoration: none; font-size: 0.9rem;
-      border-bottom: 1px solid #f2f2f2; transition: background 0.18s;
-    }
-    .dropdown-menu a:last-child { border-bottom: none; }
-    .dropdown-menu a:hover { background: #eaf4fb; color: #1a5c8a; padding-left: 24px; }
-
-    /* --- Main & Pages --- */
-    main { max-width: 1060px; margin: 28px auto; padding: 0 18px; }
-    .page { display: none; }
-    .page.active { display: block; }
-
-    /* --- Cards --- */
-    .card {
-      background: white; border-radius: 13px; padding: 30px;
-      margin-bottom: 24px; box-shadow: 0 2px 14px rgba(0,0,0,0.08);
-    }
-    .card-header {
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 20px; padding-bottom: 14px;
-      border-bottom: 2px solid #eaf4fb;
-    }
-    .card-header .icon { font-size: 2rem; }
-    .card-header h2 { color: #1a5c8a; font-size: 1.35rem; }
-    .card-header .csub { color: #888; font-size: 0.87rem; }
-
-    /* --- Typography --- */
-    h1.page-title { color: #1a5c8a; font-size: 1.75rem; margin-bottom: 22px; }
-    h2.section-title { color: #1a5c8a; font-size: 1.15rem; margin: 22px 0 10px; }
-    h3.sub-title { color: #2980b9; font-size: 1.02rem; margin: 14px 0 7px; }
-    p { margin-bottom: 10px; color: #444; }
-    ul, ol { margin: 8px 0 12px 22px; color: #444; }
-    li { margin-bottom: 5px; }
-
-    /* --- Alert boxes --- */
-    .highlight {
-      background: #eaf4fb; border-left: 4px solid #1a5c8a;
-      padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
-    }
-    .warning {
-      background: #fff8e7; border-left: 4px solid #f39c12;
-      padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
-    }
-    .important {
-      background: #fef0ef; border-left: 4px solid #e74c3c;
-      padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
-    }
-
-
-    /* --- Praticien card --- */
-    .praticien-card {
-      background: white; border-radius: 13px; padding: 26px;
-      margin-bottom: 20px; box-shadow: 0 2px 14px rgba(0,0,0,0.08);
-      border-left: 5px solid #1a5c8a;
-    }
-    .praticien-card h2 { color: #1a5c8a; font-size: 1.5rem; margin-bottom: 3px; }
-    .praticien-card .specialty { color: #2980b9; font-size: 0.95rem; font-weight: 600; margin-bottom: 16px; }
-    .contact-info { display: flex; flex-direction: column; gap: 9px; }
-    .contact-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: #444; }
-    .contact-item .ico { font-size: 1.15rem; width: 24px; text-align: center; }
-
-    /* --- Team grid --- */
-    .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 18px; }
-    .team-card { background: #f7fbff; border-radius: 10px; padding: 20px; border: 1px solid #d8eaf5; }
-    .team-card h3 { color: #1a5c8a; margin-bottom: 8px; font-size: 1.05rem; }
-
-    /* --- Accueil dossier grid --- */
-    .dossier-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; margin-top: 18px; }
-    .dossier-item {
-      background: white; border-radius: 11px; padding: 24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-      border-top: 4px solid #1a5c8a; text-align: center;
-    }
-    .dossier-item:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.13); }
-    .dossier-item .dicon { font-size: 2.6rem; margin-bottom: 11px; }
-    .dossier-item h3 { color: #1a5c8a; margin-bottom: 6px; font-size: 1.05rem; }
-    .dossier-item p { font-size: 0.83rem; color: #666; }
-
-    /* --- Two-column layout --- */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 14px 0; }
-    .col-red { background: #fef0ef; border-radius: 9px; padding: 17px; }
-    .col-green { background: #edfaf1; border-radius: 9px; padding: 17px; }
-    .col-red h4 { color: #c0392b; margin-bottom: 10px; }
-    .col-green h4 { color: #1e8449; margin-bottom: 10px; }
-
-    /* --- Welcome banner --- */
-    .welcome-banner {
-      background: linear-gradient(135deg, #1a5c8a, #2980b9);
-      color: white; border-radius: 14px; padding: 36px;
-      margin-bottom: 26px; text-align: center;
-    }
-    .welcome-banner h2 { font-size: 1.8rem; margin-bottom: 10px; }
-    .welcome-banner p { color: rgba(255,255,255,0.9); font-size: 1rem; }
-
-    /* --- Contact grid --- */
-    .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 14px; margin-top: 18px; }
-    .contact-tile { background: #f5f9fc; border-radius: 9px; padding: 16px; border-left: 3px solid #1a5c8a; }
-    .contact-tile h4 { color: #1a5c8a; margin-bottom: 5px; font-size: 0.9rem; }
-    .contact-tile .phone { font-weight: 700; font-size: 1rem; color: #2c3e50; }
-    .contact-tile .details { font-size: 0.8rem; color: #666; margin-top: 4px; line-height: 1.4; }
-
-    /* --- Footer --- */
-    footer {
-      background: #1a5c8a; color: rgba(255,255,255,0.88);
-      text-align: center; padding: 22px 20px; margin-top: 44px;
-      font-size: 0.85rem;
-    }
-    footer p + p { margin-top: 5px; opacity: 0.65; }
-
-    /* --- Liens téléphone --- */
-    a.tel-link {
-      color: inherit; text-decoration: none; font-weight: inherit;
-      border-bottom: 1.5px dotted #1a5c8a;
-      transition: color 0.2s;
-    }
-    a.tel-link:hover { color: #1a5c8a; }
-
-    /* --- Liens Doctolib --- */
-    a.doctolib-link {
-      color: #1a5c8a; font-weight: 700; text-decoration: none;
-      border-bottom: 1.5px solid #2980b9;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    a.doctolib-link:hover { color: #2980b9; border-color: #2980b9; }
-
-    /* --- Bouton Imprimer --- */
-    .btn-print {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #1a5c8a; color: white; padding: 11px 22px;
-      border-radius: 9px; font-size: 0.92rem; font-weight: 700;
-      border: none; cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      margin-top: 18px;
-    }
-    .btn-print:hover { background: #154e7a; transform: translateY(-1px); }
-
-    /* ======================================================
-       STYLES D'IMPRESSION
-    ====================================================== */
-    @media print {
-      /* Masquer tout ce qui n'est pas le contenu de la fiche */
-      #login-screen,
-      .site-header,
-      .main-nav,
-      footer,
-      .btn-print,
-      .dossier-grid,
-      .page-title { display: none !important; }
-
-      /* Fond blanc, texte noir */
-      body { background: white !important; color: #000 !important; font-size: 11pt; }
-      main { max-width: 100%; margin: 0; padding: 0; }
-
-      /* Masquer toutes les pages sauf la page active */
-      .page { display: none !important; }
-      .page.active { display: block !important; }
-
-      /* Cartes sans ombre ni bordure arrondie */
-      .card {
-        box-shadow: none !important; border: none !important;
-        padding: 0 !important; margin-bottom: 16pt !important;
-        border-radius: 0 !important;
-      }
-
-      /* En-tête de fiche imprimé proprement */
-      .card-header {
-        border-bottom: 1.5pt solid #1a5c8a !important;
-        padding-bottom: 8pt !important; margin-bottom: 14pt !important;
-      }
-      .card-header h2 { color: #1a5c8a !important; font-size: 16pt !important; }
-      .card-header .csub { font-size: 10pt; color: #555 !important; }
-
-      h2.section-title { color: #1a5c8a !important; font-size: 12pt !important; }
-      h3.sub-title { color: #2980b9 !important; font-size: 11pt !important; }
-
-      /* Boîtes colorées */
-      .highlight, .warning, .important {
-        border-left-width: 3pt !important;
-        padding: 8pt 12pt !important;
-      }
-      .highlight { background: #f0f8ff !important; border-left-color: #1a5c8a !important; }
-      .warning   { background: #fffbf0 !important; border-left-color: #f39c12 !important; }
-      .important { background: #fff8f7 !important; border-left-color: #e74c3c !important; }
-
-      /* Colonnes côte à côte */
-      .two-col { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12pt !important; }
-      .col-red  { background: #fff0ef !important; padding: 10pt !important; }
-      .col-green { background: #f0faf4 !important; padding: 10pt !important; }
-
-      /* Praticiens */
-      .praticien-card { box-shadow: none !important; border: 1pt solid #ccc !important; }
-
-      /* En-tête du cabinet en haut de chaque page imprimée */
-      .page.active::before {
-        content: "ESP du Noyer – Maison de Santé de Campbon · 2A rue de la Roulais, 44750 Campbon";
-        display: block;
-        font-size: 9pt;
-        color: #555;
-        border-bottom: 1pt solid #ccc;
-        padding-bottom: 6pt;
-        margin-bottom: 16pt;
-      }
-
-      /* Une fiche par page : saut de page après chaque carte */
-      .card { break-after: page; page-break-after: always; }
-      .card:last-child { break-after: auto; page-break-after: auto; }
-
-      /* Éviter les coupures de page au milieu des blocs */
-      .highlight, .important, .warning, .two-col { page-break-inside: avoid; break-inside: avoid; }
-      h2.section-title, h3.sub-title { page-break-after: avoid; break-after: avoid; }
-
-      /* Liens : afficher l'URL en clair si besoin */
-      a[href]::after { content: none; }
-    }
-
-    /* --- Images de fiche --- */
-    .fiche-img {
-      display: block; max-width: 100%; height: auto;
-      border-radius: 8px; margin: 14px auto;
-    }
-    .fiche-img-right {
-      float: right; margin: 0 0 14px 20px;
-      max-width: 200px; border-radius: 8px;
-    }
-    .fiche-img-center {
-      display: block; margin: 16px auto;
-      border-radius: 8px; max-width: 100%;
-    }
-    .img-caption {
-      text-align: center; font-size: 0.8rem;
-      color: #888; margin-top: -8px; margin-bottom: 12px;
-    }
-    .clearfix::after { content: ''; display: table; clear: both; }
-
-    /* --- Photo cabinet (accueil) --- */
-    .cabinet-photo {
-      width: 100%; max-height: 280px; object-fit: cover;
-      border-radius: 12px; margin-bottom: 22px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-
-    /* --- Grille AMT --- */
-    .amt-grid { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 14px 0; }
-    .amt-grid th {
-      background: #1a5c8a; color: white;
-      padding: 7px 5px; text-align: center; font-size: 0.78rem;
-    }
-    .amt-grid td {
-      padding: 7px 5px; border: 1px solid #c8dde8;
-      text-align: center; min-width: 38px; height: 26px;
-    }
-    .amt-grid .jour-cell {
-      background: #eaf4fb; font-weight: 700;
-      color: #1a5c8a; width: 70px;
-    }
-    .amt-grid .sub-header td {
-      background: #d0e8f5; font-weight: 700;
-      font-size: 0.75rem; padding: 5px;
-    }
-    .amt-grid tr:hover td { background: #f5faff; }
-    .amt-grid .result-row td {
-      background: #1a5c8a; color: white; font-weight: 700;
-    }
-
-    /* --- Grille Agenda Migraines --- */
-    .migraine-grid { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 14px 0; }
-    .migraine-grid th {
-      background: #1a5c8a; color: white;
-      padding: 7px 6px; text-align: center; font-size: 0.78rem;
-    }
-    .migraine-grid td {
-      border: 1px solid #ccc; padding: 18px 5px;
-      text-align: center; min-width: 30px;
-    }
-    .migraine-grid .col-date { min-width: 70px; background: #eaf4fb; font-weight: 700; }
-
-    /* --- QR codes --- */
-    .qr-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 18px; margin: 20px 0;
-    }
-    .qr-item {
-      background: #f7fbff; border: 1px solid #d0e6f5;
-      border-radius: 10px; padding: 16px;
-      text-align: center;
-    }
-    .qr-item canvas, .qr-item img {
-      display: block; margin: 0 auto 10px;
-      border: 4px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-      border-radius: 6px;
-    }
-    .qr-item .qr-label {
-      font-weight: 700; color: #1a5c8a;
-      font-size: 0.88rem; margin-bottom: 3px;
-    }
-    .qr-item .qr-url {
-      font-size: 0.78rem; color: #888;
-    }
-    .qr-item a { color: #1a5c8a; text-decoration: none; }
-    .qr-item a:hover { text-decoration: underline; }
-
-    /* Options tableau */
-    .options-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
-    .options-table th {
-      background: #1a5c8a; color: white;
-      padding: 9px 14px; text-align: left; font-size: 0.92rem;
-    }
-    .options-table td {
-      padding: 10px 14px; border-bottom: 1px solid #e8f0f8;
-      vertical-align: top; font-size: 0.9rem; color: #444;
-    }
-    .options-table tr:nth-child(even) td { background: #f5f9fc; }
-    .options-table td:first-child { font-weight: 700; color: #1a5c8a; white-space: nowrap; }
-
-    /* Ressources bas de page */
-    .ressources-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 16px; margin-top: 16px;
-    }
-    .ressources-box {
-      background: #f7fbff; border: 1px solid #d0e6f5;
-      border-radius: 9px; padding: 16px;
-    }
-    .ressources-box h4 { color: #1a5c8a; margin-bottom: 9px; font-size: 0.95rem; }
-    .ressources-box ul { margin-left: 16px; }
-    .ressources-box li { font-size: 0.88rem; margin-bottom: 5px; }
-    .ressources-box a { color: #1a5c8a; }
-
-    /* --- Responsive --- */
-    @media (max-width: 760px) {
-      .site-header { padding: 14px 18px; }
-      .site-header h1 { font-size: 1.15rem; }
-      .main-nav { overflow-x: auto; }
-      main { padding: 0 12px; margin: 14px auto; }
-      .card { padding: 20px; }
-      .two-col { grid-template-columns: 1fr; }
-      .welcome-banner { padding: 24px 18px; }
-      .welcome-banner h2 { font-size: 1.35rem; }
-    }
-    @media (max-width: 460px) {
-      .login-box { padding: 32px 20px; }
-      .site-header .hicon { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ============================================================
-     ÉCRAN DE CONNEXION
-============================================================ -->
+<!-- CONNEXION -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">🏥</div>
     <h1>ESP du Noyer</h1>
     <h2>Maison de Santé de Campbon</h2>
     <p class="sub">Espace patient sécurisé<br>Veuillez saisir votre code d'accès</p>
-    <input type="password" id="password-input" placeholder="Code d'accès" autocomplete="off">
-    <button class="login-btn" onclick="checkPassword()">Accéder à l'espace patient</button>
-    <p class="login-error" id="login-error">❌ Code incorrect. Veuillez réessayer.</p>
+    <input type="password" id="pwd" placeholder="Code d'accès" autocomplete="off">
+    <button class="login-btn" onclick="login()">Accéder à l'espace patient</button>
+    <p class="login-error" id="err">❌ Code incorrect. Veuillez réessayer.</p>
   </div>
 </div>
 
-<!-- ============================================================
-     APPLICATION
-============================================================ -->
-<div id="app">
+<!-- APPLICATION -->
+<div id="app" style="display:none;">
 
-  <!-- HEADER -->
   <header class="site-header">
     <div class="hicon">🏥</div>
     <div>
@@ -459,41 +32,37 @@
     </div>
   </header>
 
-  <!-- NAVIGATION -->
   <nav class="main-nav">
-    <div class="nav-item">
-      <a href="#" onclick="showPage('accueil'); return false;">🏠 Accueil</a>
-    </div>
+    <div class="nav-item"><a href="#" onclick="show('accueil');return false;">🏠 Accueil</a></div>
     <div class="nav-item">
       <a href="#">👨‍⚕️ Médecins ▾</a>
       <div class="dropdown-menu">
-        <a href="#" onclick="showPage('dr-kwan'); return false;">Dr KWAN Marine</a>
-        <a href="#" onclick="showPage('dr-fontaine'); return false;">Dr FONTAINE Nadège</a>
-        <a href="#" onclick="showPage('dr-levy'); return false;">Dr LEVY Romain</a>
-        <a href="#" onclick="showPage('dr-virondaud'); return false;">Dr VIRONDAUD Mathieu</a>
+        <a href="#" onclick="show('dr-kwan');return false;">Dr KWAN Marine</a>
+        <a href="#" onclick="show('dr-fontaine');return false;">Dr FONTAINE Nadège</a>
+        <a href="#" onclick="show('dr-levy');return false;">Dr LEVY Romain</a>
+        <a href="#" onclick="show('dr-virondaud');return false;">Dr VIRONDAUD Mathieu</a>
       </div>
     </div>
-    <div class="nav-item">
-      <a href="#" onclick="showPage('equipe'); return false;">👥 Équipe paramédicale</a>
-    </div>
+    <div class="nav-item"><a href="#" onclick="show('equipe');return false;">👥 Équipe paramédicale</a></div>
     <div class="nav-item">
       <a href="#">📋 Fiches patients ▾</a>
       <div class="dropdown-menu">
-        <a href="#" onclick="showPage('dossier-cardio'); return false;">🫀 Cardiovasculaire</a>
-        <a href="#" onclick="showPage('dossier-digestif'); return false;">🍽️ Digestif</a>
-        <a href="#" onclick="showPage('dossier-rhumato'); return false;">🦴 Rhumatologie</a>
-        <a href="#" onclick="showPage('dossier-suivi'); return false;">📊 Agendas de suivi</a>
-        <a href="#" onclick="showPage('dossier-droits'); return false;">⚖️ Droits du patient</a>
+        <a href="#" onclick="show('accueil');return false;">Toutes les fiches</a>
+        <a href="fiche-amt.html">🩺 Automesure tensionnelle</a>
+        <a href="fiche-cholesterol.html">🫀 Cholestérol</a>
+        <a href="fiche-gea.html">🦠 Gastro-entérite</a>
+        <a href="fiche-rgo.html">🔥 Reflux gastro-œsophagien</a>
+        <a href="fiche-goutte.html">⚡ Crise de goutte</a>
+        <a href="fiche-migraines.html">🧠 Agenda migraines</a>
+        <a href="fiche-sommeil.html">😴 Agenda sommeil</a>
+        <a href="fiche-directives.html">📜 Directives anticipées</a>
       </div>
     </div>
   </nav>
 
-  <!-- MAIN CONTENT -->
   <main>
 
-    <!-- =========================================================
-         PAGE : ACCUEIL
-    ========================================================= -->
+    <!-- ===== ACCUEIL ===== -->
     <section id="page-accueil" class="page active">
       <img src="img/cabinet.jpg" alt="Maison de Santé du Noyer – Campbon" class="cabinet-photo">
 
@@ -502,231 +71,183 @@
         <p>Maison de Santé Pluridisciplinaire de Campbon<br>2A rue de la Roulais – 44750 Campbon</p>
       </div>
 
+      <!-- Contacts rapides -->
       <div class="card">
-        <div class="card-header">
-          <div class="icon">📍</div>
-          <div><h2>Notre cabinet</h2><div class="csub">Maison de santé pluridisciplinaire</div></div>
-        </div>
-        <p>L'ESP du Noyer regroupe une équipe pluridisciplinaire de professionnels de santé au service des patients de Campbon et de ses environs. Notre objectif est de vous offrir une prise en charge globale et coordonnée de votre santé.</p>
-        <p>Vous trouverez ici toutes les informations utiles sur nos praticiens ainsi que des fiches médicales d'information préparées spécialement pour vous.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">📞</div>
-          <div><h2>Contacts rapides</h2><div class="csub">Prendre rendez-vous</div></div>
-        </div>
+        <div class="card-header"><div class="icon">📞</div><div><h2>Contacts rapides</h2><div class="csub">Prendre rendez-vous</div></div></div>
         <div class="contact-grid">
-          <div class="contact-tile">
-            <h4>Dr KWAN Marine</h4>
-            <div class="phone">02 40 95 75 41</div>
-            <div class="details">Rdv sur Doctolib</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Dr FONTAINE Nadège</h4>
-            <div class="phone">02 40 56 57 40</div>
-            <div class="details">Rdv sur Doctolib</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Dr LEVY Romain</h4>
-            <div class="phone">02 40 56 57 40</div>
-            <div class="details">Rdv sur Doctolib</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Dr VIRONDAUD Mathieu</h4>
-            <div class="phone">02 51 71 32 35</div>
-            <div class="details">Rdv sur Doctolib</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Infirmières – Cabinet 1</h4>
-            <div class="phone">02 40 56 79 08</div>
-            <div class="details">LE CLAINCHE, GUIGNARD, AMISSE, RAULT<br>Sans rdv lun–sam : 9h00–9h30</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Infirmières – Cabinet 2</h4>
-            <div class="phone">02 40 06 20 76</div>
-            <div class="details">AOUSTIN, BANNIER<br>Sans rdv lun–sam : 8h30–9h00</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Podologue – MORICE Adèle</h4>
-            <div class="phone">02 40 97 80 63</div>
-            <div class="details">Rdv sur Doctolib · Lun–mar 9h–19h</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Ostéopathe – LOSSEC Claire</h4>
-            <div class="phone">02 40 58 06 44</div>
-            <div class="details">Rdv sur Doctolib · Lun–ven</div>
-          </div>
-          <div class="contact-tile">
-            <h4>Kinésithérapeute – BRUNET Sarah</h4>
-            <div class="phone">02 40 31 20 18</div>
-            <div class="details"></div>
-          </div>
+          <div class="contact-tile"><h4>Dr KWAN Marine</h4><div class="phone">02 40 95 75 41</div><div class="details">Rdv sur Doctolib</div></div>
+          <div class="contact-tile"><h4>Dr FONTAINE Nadège</h4><div class="phone">02 40 56 57 40</div><div class="details">Rdv sur Doctolib</div></div>
+          <div class="contact-tile"><h4>Dr LEVY Romain</h4><div class="phone">02 40 56 57 40</div><div class="details">Rdv sur Doctolib</div></div>
+          <div class="contact-tile"><h4>Dr VIRONDAUD Mathieu</h4><div class="phone">02 51 71 32 35</div><div class="details">Rdv sur Doctolib</div></div>
+          <div class="contact-tile"><h4>Infirmières – Cabinet 1</h4><div class="phone">02 40 56 79 08</div><div class="details">LE CLAINCHE, GUIGNARD, AMISSE, RAULT<br>Sans rdv lun–sam : 9h–9h30</div></div>
+          <div class="contact-tile"><h4>Infirmières – Cabinet 2</h4><div class="phone">02 40 06 20 76</div><div class="details">AOUSTIN, BANNIER<br>Sans rdv lun–sam : 8h30–9h</div></div>
+          <div class="contact-tile"><h4>Podologue – MORICE Adèle</h4><div class="phone">02 40 97 80 63</div><div class="details">Rdv sur Doctolib</div></div>
+          <div class="contact-tile"><h4>Ostéopathe – LOSSEC Claire</h4><div class="phone">02 40 58 06 44</div><div class="details">Rdv sur Doctolib</div></div>
+          <div class="contact-tile"><h4>Kinésithérapeute – BRUNET Sarah</h4><div class="phone">02 40 31 20 18</div><div class="details"></div></div>
         </div>
       </div>
 
+      <!-- Rubriques fiches -->
       <div class="card">
-        <div class="card-header">
-          <div class="icon">📋</div>
-          <div><h2>Fiches patients</h2><div class="csub">Informations et conseils médicaux par thématique</div></div>
+        <div class="card-header"><div class="icon">📋</div><div><h2>Fiches patients</h2><div class="csub">Cliquez sur une fiche pour la consulter ou l'imprimer</div></div></div>
+
+        <div class="specialty-section">
+          <h2>🫀 Cardiovasculaire</h2>
+          <div class="fiche-cards-grid">
+            <a href="fiche-amt.html" class="fiche-card-link">
+              <div class="fc-icon">🩺</div>
+              <div class="fc-title">Automesure tensionnelle</div>
+              <div class="fc-desc">Mesurer sa tension à domicile – relevé 3 jours</div>
+            </a>
+            <a href="fiche-cholesterol.html" class="fiche-card-link">
+              <div class="fc-icon">🫀</div>
+              <div class="fc-title">Cholestérol</div>
+              <div class="fc-desc">Comprendre et agir sur l'hypercholestérolémie</div>
+            </a>
+          </div>
         </div>
-        <div class="dossier-grid">
-          <div class="dossier-item" onclick="showPage('dossier-cardio')">
-            <div class="dicon">🫀</div>
-            <h3>Cardiovasculaire</h3>
-            <p>Automesure tensionnelle, hypercholestérolémie</p>
+
+        <div class="specialty-section">
+          <h2>🍽️ Digestif</h2>
+          <div class="fiche-cards-grid">
+            <a href="fiche-gea.html" class="fiche-card-link">
+              <div class="fc-icon">🦠</div>
+              <div class="fc-title">Gastro-entérite</div>
+              <div class="fc-desc">Bons gestes adulte et enfant, surveillance</div>
+            </a>
+            <a href="fiche-rgo.html" class="fiche-card-link">
+              <div class="fc-icon">🔥</div>
+              <div class="fc-title">Reflux gastro-œsophagien</div>
+              <div class="fc-desc">Conseils alimentaires et positionnels</div>
+            </a>
           </div>
-          <div class="dossier-item" onclick="showPage('dossier-digestif')">
-            <div class="dicon">🍽️</div>
-            <h3>Digestif</h3>
-            <p>Gastro-entérite, reflux gastro-œsophagien</p>
+        </div>
+
+        <div class="specialty-section">
+          <h2>🦴 Rhumatologie</h2>
+          <div class="fiche-cards-grid">
+            <a href="fiche-goutte.html" class="fiche-card-link">
+              <div class="fc-icon">⚡</div>
+              <div class="fc-title">Crise de goutte</div>
+              <div class="fc-desc">Régime hypo-uricémiant, aliments à éviter</div>
+            </a>
           </div>
-          <div class="dossier-item" onclick="showPage('dossier-rhumato')">
-            <div class="dicon">🦴</div>
-            <h3>Rhumatologie</h3>
-            <p>Crise de goutte, régime hypo-uricémiant</p>
+        </div>
+
+        <div class="specialty-section">
+          <h2>📊 Agendas de suivi</h2>
+          <div class="fiche-cards-grid">
+            <a href="fiche-migraines.html" class="fiche-card-link">
+              <div class="fc-icon">🧠</div>
+              <div class="fc-title">Agenda des migraines</div>
+              <div class="fc-desc">Suivi des crises migraineuses à imprimer</div>
+            </a>
+            <a href="fiche-sommeil.html" class="fiche-card-link">
+              <div class="fc-icon">😴</div>
+              <div class="fc-title">Agenda du sommeil</div>
+              <div class="fc-desc">Suivi de la qualité du sommeil sur 3 semaines</div>
+            </a>
           </div>
-          <div class="dossier-item" onclick="showPage('dossier-suivi')">
-            <div class="dicon">📊</div>
-            <h3>Agendas de suivi</h3>
-            <p>Agenda des migraines, agenda du sommeil</p>
-          </div>
-          <div class="dossier-item" onclick="showPage('dossier-droits')">
-            <div class="dicon">⚖️</div>
-            <h3>Droits du patient</h3>
-            <p>Directives anticipées, personne de confiance, don d'organe</p>
+        </div>
+
+        <div class="specialty-section">
+          <h2>⚖️ Droits du patient</h2>
+          <div class="fiche-cards-grid">
+            <a href="fiche-directives.html" class="fiche-card-link">
+              <div class="fc-icon">📜</div>
+              <div class="fc-title">Directives anticipées</div>
+              <div class="fc-desc">Fin de vie, personne de confiance, don d'organe</div>
+            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- =========================================================
-         PAGE : DR KWAN MARINE
-    ========================================================= -->
+    <!-- ===== MÉDECINS ===== -->
     <section id="page-dr-kwan" class="page">
       <div class="praticien-card">
-        <h2>Dr KWAN Marine</h2>
-        <div class="specialty">Médecin Généraliste</div>
+        <h2>Dr KWAN Marine</h2><div class="specialty">Médecin Généraliste</div>
         <div class="contact-info">
           <div class="contact-item"><span class="ico">📞</span><span><strong>02 40 95 75 41</strong></span></div>
-          <div class="contact-item"><span class="ico">🌐</span><span>Prise de rendez-vous sur <strong>Doctolib.fr</strong></span></div>
+          <div class="contact-item"><span class="ico">🌐</span><span>Rdv sur <strong>Doctolib.fr</strong></span></div>
           <div class="contact-item"><span class="ico">📍</span><span>2A rue de la Roulais, 44750 Campbon</span></div>
         </div>
       </div>
-      <div class="card">
-        <p>Le Dr KWAN Marine exerce en tant que médecin généraliste au sein de la Maison de Santé du Noyer à Campbon. Elle assure des consultations de médecine générale pour les patients de Campbon et des communes environnantes.</p>
-        <p>Pour prendre rendez-vous, vous pouvez appeler directement le cabinet ou utiliser la plateforme en ligne <strong>Doctolib.fr</strong>.</p>
-      </div>
     </section>
 
-    <!-- =========================================================
-         PAGE : DR FONTAINE NADÈGE
-    ========================================================= -->
     <section id="page-dr-fontaine" class="page">
       <div class="praticien-card">
-        <h2>Dr FONTAINE Nadège</h2>
-        <div class="specialty">Médecin Généraliste</div>
+        <h2>Dr FONTAINE Nadège</h2><div class="specialty">Médecin Généraliste</div>
         <div class="contact-info">
           <div class="contact-item"><span class="ico">📞</span><span><strong>02 40 56 57 40</strong></span></div>
-          <div class="contact-item"><span class="ico">🌐</span><span>Prise de rendez-vous sur <strong>Doctolib.fr</strong></span></div>
+          <div class="contact-item"><span class="ico">🌐</span><span>Rdv sur <strong>Doctolib.fr</strong></span></div>
           <div class="contact-item"><span class="ico">📍</span><span>2A rue de la Roulais, 44750 Campbon</span></div>
         </div>
       </div>
-      <div class="card">
-        <p>Le Dr FONTAINE Nadège exerce en tant que médecin généraliste au sein de la Maison de Santé du Noyer à Campbon. Elle assure des consultations de médecine générale pour les patients de Campbon et des communes environnantes.</p>
-        <p>Pour prendre rendez-vous, vous pouvez appeler directement le cabinet ou utiliser la plateforme en ligne <strong>Doctolib.fr</strong>.</p>
-      </div>
     </section>
 
-    <!-- =========================================================
-         PAGE : DR LEVY ROMAIN
-    ========================================================= -->
     <section id="page-dr-levy" class="page">
       <div class="praticien-card">
-        <h2>Dr LEVY Romain</h2>
-        <div class="specialty">Médecin Généraliste</div>
+        <h2>Dr LEVY Romain</h2><div class="specialty">Médecin Généraliste</div>
         <div class="contact-info">
           <div class="contact-item"><span class="ico">📞</span><span><strong>02 40 56 57 40</strong></span></div>
-          <div class="contact-item"><span class="ico">🌐</span><span>Prise de rendez-vous sur <strong>Doctolib.fr</strong></span></div>
+          <div class="contact-item"><span class="ico">🌐</span><span>Rdv sur <strong>Doctolib.fr</strong></span></div>
           <div class="contact-item"><span class="ico">📍</span><span>2A rue de la Roulais, 44750 Campbon</span></div>
         </div>
       </div>
-      <div class="card">
-        <p>Le Dr LEVY Romain exerce en tant que médecin généraliste au sein de la Maison de Santé du Noyer à Campbon. Il assure des consultations de médecine générale pour les patients de Campbon et des communes environnantes.</p>
-        <p>Pour prendre rendez-vous, vous pouvez appeler directement le cabinet ou utiliser la plateforme en ligne <strong>Doctolib.fr</strong>.</p>
-      </div>
     </section>
 
-    <!-- =========================================================
-         PAGE : DR VIRONDAUD MATHIEU
-    ========================================================= -->
     <section id="page-dr-virondaud" class="page">
       <div class="praticien-card">
-        <h2>Dr VIRONDAUD Mathieu</h2>
-        <div class="specialty">Médecin Généraliste</div>
+        <h2>Dr VIRONDAUD Mathieu</h2><div class="specialty">Médecin Généraliste</div>
         <div class="contact-info">
           <div class="contact-item"><span class="ico">📞</span><span><strong>02 51 71 32 35</strong></span></div>
-          <div class="contact-item"><span class="ico">🌐</span><span>Prise de rendez-vous sur <strong>Doctolib.fr</strong></span></div>
+          <div class="contact-item"><span class="ico">🌐</span><span>Rdv sur <strong>Doctolib.fr</strong></span></div>
           <div class="contact-item"><span class="ico">📍</span><span>2A rue de la Roulais, 44750 Campbon</span></div>
         </div>
       </div>
-      <div class="card">
-        <p>Le Dr VIRONDAUD Mathieu exerce en tant que médecin généraliste au sein de la Maison de Santé du Noyer à Campbon. Il assure des consultations de médecine générale pour les patients de Campbon et des communes environnantes.</p>
-        <p>Pour prendre rendez-vous, vous pouvez appeler directement le cabinet ou utiliser la plateforme en ligne <strong>Doctolib.fr</strong>.</p>
-      </div>
     </section>
 
-    <!-- =========================================================
-         PAGE : ÉQUIPE PARAMÉDICALE
-    ========================================================= -->
+    <!-- ===== ÉQUIPE ===== -->
     <section id="page-equipe" class="page">
       <h1 class="page-title">👥 Équipe paramédicale</h1>
-
       <div class="card">
         <div class="card-header"><div class="icon">💉</div><div><h2>Infirmières</h2></div></div>
         <div class="team-grid">
           <div class="team-card">
             <h3>Cabinet 1</h3>
-            <p>LE CLAINCHE Véronique<br>GUIGNARD Véronique<br>AMISSE Clémence<br>RAULT Alyssa</p>
+            <p>LE CLAINCHE Véronique · GUIGNARD Véronique<br>AMISSE Clémence · RAULT Alyssa</p>
             <div style="margin-top:10px;">
               <div class="contact-item"><span class="ico">📞</span><span>02 40 56 79 08</span></div>
               <div class="contact-item"><span class="ico">📞</span><span>07 85 27 36 31</span></div>
             </div>
-            <div class="highlight" style="margin-top:10px;font-size:0.88rem;">
-              Permanence de soins sans rdv<br><strong>Lundi au samedi : 9h00 – 9h30</strong>
-            </div>
+            <div class="highlight" style="margin-top:10px;font-size:.88rem;">Permanence sans rdv · Lun–sam 9h00–9h30</div>
           </div>
           <div class="team-card">
             <h3>Cabinet 2</h3>
-            <p>AOUSTIN Jennifer<br>BANNIER Élodie</p>
+            <p>AOUSTIN Jennifer · BANNIER Élodie</p>
             <div style="margin-top:10px;">
               <div class="contact-item"><span class="ico">📞</span><span>02 40 06 20 76</span></div>
             </div>
-            <div class="highlight" style="margin-top:10px;font-size:0.88rem;">
-              Permanence de soins sans rdv<br><strong>Lundi au samedi : 8h30 – 9h00</strong>
-            </div>
+            <div class="highlight" style="margin-top:10px;font-size:.88rem;">Permanence sans rdv · Lun–sam 8h30–9h00</div>
           </div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-header"><div class="icon">🦶</div><div><h2>Podologue</h2></div></div>
         <div class="praticien-card" style="margin-bottom:0;">
-          <h2>MORICE Adèle</h2>
-          <div class="specialty">Podologue</div>
+          <h2>MORICE Adèle</h2><div class="specialty">Podologue</div>
           <div class="contact-info">
             <div class="contact-item"><span class="ico">📞</span><span>02 40 97 80 63</span></div>
             <div class="contact-item"><span class="ico">🌐</span><span>Rdv sur Doctolib.fr</span></div>
-            <div class="contact-item"><span class="ico">🕐</span><span>Lundi et mardi 9h–19h · Mercredi 9h30–19h · Vendredi 9h30–18h30</span></div>
+            <div class="contact-item"><span class="ico">🕐</span><span>Lun–mar 9h–19h · Mer 9h30–19h · Ven 9h30–18h30</span></div>
           </div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-header"><div class="icon">🤲</div><div><h2>Ostéopathe</h2></div></div>
         <div class="praticien-card" style="margin-bottom:0;">
-          <h2>LOSSEC Claire</h2>
-          <div class="specialty">Ostéopathe</div>
+          <h2>LOSSEC Claire</h2><div class="specialty">Ostéopathe</div>
           <div class="contact-info">
             <div class="contact-item"><span class="ico">📞</span><span>02 40 58 06 44</span></div>
             <div class="contact-item"><span class="ico">🌐</span><span>Rdv sur Doctolib.fr</span></div>
@@ -734,816 +255,76 @@
           </div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-header"><div class="icon">💬</div><div><h2>Orthophonistes</h2></div></div>
         <div class="team-grid">
-          <div class="team-card">
-            <h3>ONNO Anaïs</h3>
-            <p style="color:#e67e22;font-size:0.88rem;margin-bottom:8px;">⚠️ Planning complet</p>
-            <p style="font-size:0.87rem;">Liste d'attente :<br>
-              <a href="https://perfactive.fr/list/anais-onno" target="_blank" style="color:#1a5c8a;font-weight:600;">perfactive.fr/list/anais-onno</a>
-            </p>
-            <div class="highlight" style="margin-top:10px;font-size:0.87rem;">Lundi au jeudi · 9h – 17h</div>
-          </div>
-          <div class="team-card">
-            <h3>ALTAZIN Barbara</h3>
-            <div class="contact-item"><span class="ico">📍</span><span>12 le Verger, Campbon</span></div>
-          </div>
-          <div class="team-card">
-            <h3>DERRIEN Anna</h3>
-            <div class="contact-item"><span class="ico">📍</span><span>12 le Verger, Campbon</span></div>
-          </div>
+          <div class="team-card"><h3>ONNO Anaïs</h3><p style="color:#e67e22;font-size:.88rem;">⚠️ Planning complet</p><p style="font-size:.87rem;">Liste d'attente : <a href="https://perfactive.fr/list/anais-onno" target="_blank" class="ext-link">perfactive.fr/list/anais-onno</a></p><div class="highlight" style="margin-top:8px;font-size:.87rem;">Lun–jeu · 9h–17h</div></div>
+          <div class="team-card"><h3>ALTAZIN Barbara</h3><div class="contact-item"><span class="ico">📍</span><span>12 le Verger, Campbon</span></div></div>
+          <div class="team-card"><h3>DERRIEN Anna</h3><div class="contact-item"><span class="ico">📍</span><span>12 le Verger, Campbon</span></div></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-header"><div class="icon">🏃</div><div><h2>Kinésithérapeute</h2></div></div>
         <div class="praticien-card" style="margin-bottom:0;">
-          <h2>BRUNET Sarah</h2>
-          <div class="specialty">Kinésithérapeute</div>
-          <div class="contact-info">
-            <div class="contact-item"><span class="ico">📞</span><span>02 40 31 20 18</span></div>
-          </div>
+          <h2>BRUNET Sarah</h2><div class="specialty">Kinésithérapeute</div>
+          <div class="contact-info"><div class="contact-item"><span class="ico">📞</span><span>02 40 31 20 18</span></div></div>
         </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PAGE : DOSSIER CARDIOVASCULAIRE
-    ========================================================= -->
-    <section id="page-dossier-cardio" class="page">
-      <h1 class="page-title">🫀 Dossier Cardiovasculaire</h1>
-
-      <!-- AUTOMESURE TENSIONNELLE -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">🩺</div>
-          <div><h2>Automesure Tensionnelle</h2><div class="csub">Comment bien mesurer sa tension à domicile</div></div>
-        </div>
-
-        <div class="clearfix">
-          <img src="img/amt_personne.png" alt="Position correcte pour la mesure" class="fiche-img-right">
-          <img src="img/amt_appareil.png" alt="Tensiomètre" class="fiche-img-right" style="max-width:130px; margin-top:8px;">
-
-        <h2 class="section-title">Pourquoi ?</h2>
-        <p>Pour affirmer le diagnostic d'une hypertension artérielle, ou parce que la tension obtenue au cabinet par le médecin est suspecte (« effet blouse blanche »), ou encore dans le cadre d'une surveillance, votre médecin peut vous proposer de réaliser un relevé d'automesure tensionnelle.</p>
-        <p>La tension artérielle d'une personne en bonne santé n'est pas stable : elle fluctue en fonction de l'environnement. Émotion, stress, activité physique… influent directement sur la pression artérielle.</p>
-
-        <h2 class="section-title">Comment procéder ?</h2>
-        <div class="highlight">
-          <strong>Toujours dans les mêmes conditions :</strong>
-          <ul style="margin-top:8px;">
-            <li>Pas de tabac, thé, café ou sport dans les <strong>30 minutes précédentes</strong></li>
-            <li>Si possible, toujours le même bras, reposant sur la table ou un accoudoir</li>
-            <li>Brassard à la hauteur du cœur, au-dessus du coude, câble vers le bas</li>
-            <li><strong>3 mesures consécutives</strong> à 2 min d'intervalle</li>
-            <li>Le <strong>matin</strong> avant le petit-déjeuner (avant la prise des médicaments)</li>
-            <li>Le <strong>soir</strong> entre le dîner et le coucher</li>
-            <li><strong>3 jours de suite</strong></li>
-          </ul>
-        </div>
-        <div class="highlight" style="margin-top:12px;">
-          <strong>Position correcte :</strong> Après 5 min de repos en position assise – sans croiser les jambes, pieds à terre, dos appuyé, sans fumer et si possible sans parler.
-        </div>
-
-        </div>
-
-        <h2 class="section-title">Relevé des mesures</h2>
-        <p>Notez chaque mesure dans le tableau ci-dessous (systolique, diastolique, pouls) sans arrondir les résultats.</p>
-
-        <div style="overflow-x:auto;">
-        <table class="amt-grid">
-          <thead>
-            <tr>
-              <th rowspan="2"></th>
-              <th colspan="3">Matin</th>
-              <th colspan="3">Soir</th>
-            </tr>
-            <tr>
-              <th>Systolique</th><th>Diastolique</th><th>Pouls</th>
-              <th>Systolique</th><th>Diastolique</th><th>Pouls</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="jour-cell" rowspan="3">Jour 1<br><small>Le ……</small></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="jour-cell" rowspan="3">Jour 2<br><small>Le ……</small></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="jour-cell" rowspan="3">Jour 3<br><small>Le ……</small></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr class="result-row">
-              <td><strong>Moyenne</strong></td>
-              <td colspan="2" style="font-size:0.75rem;">Moy. systolique = total ÷ 18</td>
-              <td></td>
-              <td colspan="2" style="font-size:0.75rem;">Moy. diastolique = total ÷ 18</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-        </div>
-
-        <h2 class="section-title">Calcul de la moyenne</h2>
-        <p>Notez chaque mesure dans le tableau (systolique, diastolique, pouls) sans arrondir les résultats.</p>
-        <ul>
-          <li><strong>Moyenne systolique :</strong> additionnez toutes les mesures systoliques et divisez par 18</li>
-          <li><strong>Moyenne diastolique :</strong> additionnez toutes les mesures diastoliques et divisez par 18</li>
-        </ul>
-        <p style="margin-top:8px;">En cas de doute, votre médecin effectuera cette moyenne avec vous lors de votre prochain rendez-vous.</p>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-
-      <!-- HYPERCHOLESTÉROLÉMIE -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">🫀</div>
-          <div><h2>Le Cholestérol</h2><div class="csub">Dyslipidémie ou hypercholestérolémie – Ce qu'il faut savoir</div></div>
-        </div>
-
-        <h2 class="section-title">Le cholestérol, qu'est-ce que c'est ?</h2>
-        <p>Le cholestérol est une <strong>graisse naturelle indispensable</strong> à l'organisme. C'est un constituant essentiel de la paroi de nos cellules ; il entre dans la composition de nombreuses hormones et permet la synthèse de la vitamine D.</p>
-        <ul>
-          <li><strong>3/4</strong> du cholestérol sont produits par le foie</li>
-          <li><strong>1/4</strong> du cholestérol provient de notre alimentation</li>
-        </ul>
-
-        <h2 class="section-title">« Bon » et « Mauvais » cholestérol</h2>
-        <div class="two-col">
-          <div class="col-green">
-            <h4>✅ Le « bon » cholestérol (HDL)</h4>
-            <p>Va des cellules vers le foie, puis est éliminé par la bile. Il permet l'<strong>élimination</strong> du cholestérol de l'organisme.</p>
-          </div>
-          <div class="col-red">
-            <h4>❌ Le « mauvais » cholestérol (LDL)</h4>
-            <p>Va du foie vers les cellules. Il tend à <strong>se déposer sur les parois des artères</strong> et à former des plaques qui grossissent et obstruent les conduits artériels.</p>
-          </div>
-        </div>
-
-        <div class="important">
-          <strong>Conséquences d'un excès de cholestérol :</strong> En excès dans le sang (hypercholestérolémie), le « mauvais » cholestérol <strong>détériore les artères</strong> (plaques d'athérosclérose), favorise les caillots et les <strong>accidents cardio-vasculaires</strong>.
-        </div>
-
-        <h2 class="section-title">Les recommandations alimentaires</h2>
-        <p>La modification de l'alimentation est la <strong>première étape indispensable</strong>. La diététique est un traitement à part entière. Dans bon nombre de cas, la simple modification des habitudes alimentaires et la reprise d'une activité physique régulière sont suffisantes.</p>
-        <p>Dans la mesure du possible, retrouvez le plaisir de faire la cuisine : vous contrôlez ainsi exactement ce que vous mangez (évitez la nourriture industrielle). Apprenez à <strong>lire les étiquettes</strong> sur les aliments.</p>
-
-        <div class="two-col" style="margin-top:16px;">
-          <div class="col-red">
-            <h4>🚫 Aliments à éviter</h4>
-            <ul>
-              <li>Beurre (max 5 g/jour)</li>
-              <li>Lait entier (préférez le demi-écrémé)</li>
-              <li>Crème fraîche (occasionnellement)</li>
-              <li>Charcuteries et viandes grasses</li>
-              <li>Fromages gras</li>
-              <li>Pâtisseries, viennoiseries, tartes salées, pizzas</li>
-              <li>Max 3 œufs par semaine</li>
-              <li>Sauces grasses (béchamel, mayo…)</li>
-              <li>Plats préparés, biscuits, friandises</li>
-              <li>Huiles de palme et de coprah</li>
-              <li>Margarines dures (type Végétaline®)</li>
-            </ul>
-          </div>
-          <div class="col-green">
-            <h4>✅ Aliments à privilégier</h4>
-            <ul>
-              <li>Légumes verts, crudités</li>
-              <li>Au moins 2 fruits frais par jour, fruits secs</li>
-              <li>Huiles végétales (tournesol, olive, colza)</li>
-              <li>Poisson au moins 2 fois/semaine</li>
-              <li>Viandes blanches (veau, dinde, poulet)</li>
-              <li>Céréales et dérivés (riz, pâtes, semoule)</li>
-              <li>Herbes aromatiques, épices</li>
-              <li>Ail (aide à faire baisser le cholestérol)</li>
-              <li>Légumes : tomates, bouillons comme sauces</li>
-            </ul>
-          </div>
-        </div>
-
-        <img src="img/cholesterol.jpg" alt="Alimentation et activité physique – conseils cholestérol" class="fiche-img-center" style="max-width:480px;">
-        <p class="img-caption">Alimentation équilibrée et activité physique régulière sont les deux piliers du traitement.</p>
-
-        <div class="warning">
-          💡 <strong>Conseil :</strong> Manger légèrement le soir – c'est pendant la nuit que le foie fabrique du cholestérol.<br>
-          <em>« Au petit-déjeuner, repas de roi ; au déjeuner, repas de prince ; au dîner, repas de mendiant. »</em>
-        </div>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PAGE : DOSSIER DIGESTIF
-    ========================================================= -->
-    <section id="page-dossier-digestif" class="page">
-      <h1 class="page-title">🍽️ Dossier Digestif</h1>
-
-      <!-- GASTRO-ENTÉRITE -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">🦠</div>
-          <div><h2>Gastro-entérite</h2><div class="csub">Vous ou votre enfant avez une gastro-entérite ? Les bons gestes à adopter</div></div>
-        </div>
-
-        <div class="clearfix">
-          <img src="img/gea_mains.png" alt="Lavage des mains obligatoire" class="fiche-img-right" style="max-width:110px;">
-        <div class="important">
-          <strong>🧼 Règle d'hygiène fondamentale :</strong> Chez l'adulte comme chez l'enfant, la <strong>désinfection des mains est essentielle</strong> après chaque passage aux toilettes et avant de manger. On ne partage pas les affaires de toilette ni les couverts.
-        </div>
-
-        </div>
-
-        <h2 class="section-title">Pour l'adulte</h2>
-        <ul>
-          <li><strong>Repas petits mais fréquents</strong>, composés d'aliments salés, riches en sucre et sans résidus : bouillons salés, riz, pommes de terre, pâtes, semoule, légumes cuits, viandes maigres, gelée ou compote de coing.</li>
-          <li>À l'exception des bananes, <strong>évitez les fruits, les légumes crus</strong> et tous les aliments riches en fibres (céréales complètes, légumineuses…).</li>
-          <li>Pas de repas copieux ni de boissons glacées.</li>
-          <li><strong>Hydratation régulière</strong> : boissons contenant sucre et sel (eau sucrée, bouillons de légumes, cola battu).</li>
-        </ul>
-        <div class="highlight">
-          <strong>En cas de vomissements répétés :</strong> Se resucrer en petite quantité toutes les <strong>10–15 min</strong> (10 ml ou 1 à 2 cuillères à café d'eau sucrée ou de compote) pendant 2 heures, puis rajouter des féculents en petite quantité. En cas de persistance après 2 tentatives, prenez un avis médical.
-        </div>
-
-        <h2 class="section-title">Pour l'enfant</h2>
-        <h3 class="sub-title">➡ De moins de 2 ans</h3>
-        <ul>
-          <li>Hydratez votre bébé avec des <strong>solutions de réhydratation orale (SRO)</strong> : 10 ml toutes les 10 min en cas de vomissements pendant 2 heures, puis sans limitation.</li>
-          <li>Si refus des SRO, proposez des boissons sucrées (jus de fruit pour bébés).</li>
-          <li>Utilisez un <strong>lait de régime anti-diarrhéique</strong> (en pharmacie) s'il y a plus de 5 selles/jour pendant 48 h.</li>
-          <li>Pour les bébés allaités : proposez des tétées très régulièrement.</li>
-        </ul>
-
-        <h3 class="sub-title">➡ De plus de 2 ans</h3>
-        <ul>
-          <li><strong>Ne pas réhydrater avec de l'eau pure</strong> (manque de sel = aggravation de la déshydratation).</li>
-          <li>Proposez des boissons adaptées en petite quantité mais très régulièrement (eau sucrée, jus de pomme, bouillon de légumes).</li>
-          <li>En cas de vomissements : resucrer toutes les 10–15 min (10 ml d'eau sucrée ou 1 à 2 cuillères de compote) pendant 2 heures.</li>
-          <li>Évitez légumes verts, viandes, fruits acides, matières grasses.</li>
-          <li>Privilégiez : riz, pommes râpées, banane, compote, pain grillé. Arrêtez le lait et les laitages le temps des diarrhées, puis réintroduisez d'abord les yaourts.</li>
-        </ul>
-
-        <h3 class="sub-title">🔍 Surveillance de l'enfant – Signes d'alarme</h3>
-        <div class="important">
-          <strong>Consultez un médecin (urgences pédiatriques si besoin) si :</strong>
-          <ul style="margin-top:8px;">
-            <li>Perte de poids notable (signe de déshydratation)</li>
-            <li>Fièvre élevée</li>
-            <li>Sang dans les selles</li>
-            <li>Enfant très agité ou trop endormi, pleurs faibles, respiration rapide</li>
-            <li>Vomissements persistants malgré 3 tentatives de réhydratation</li>
-          </ul>
-        </div>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-
-      <!-- RGO -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">🔥</div>
-          <div><h2>Reflux Gastro-Œsophagien (RGO)</h2><div class="csub">Ce qu'il faut savoir et les conseils pratiques</div></div>
-        </div>
-
-        <img src="img/rgo.jpg" alt="Schéma : estomac sain vs reflux gastro-œsophagien" class="fiche-img-center" style="max-width:460px;">
-        <p class="img-caption">À gauche : estomac en bonne santé. À droite : reflux avec sphincter ouvert.</p>
-
-        <h2 class="section-title">Qu'est-ce que c'est ?</h2>
-        <p>Le Reflux Gastro-Œsophagien (RGO) est la remontée du contenu de l'estomac (aliments + acide chlorydrique) vers l'œsophage, provoquant :</p>
-        <ul>
-          <li><strong>Des brûlures (pyrosis)</strong> partant de la région épigastrique et remontant derrière le sternum</li>
-          <li>Des remontées ou régurgitations acides ou amères</li>
-          <li>Des douleurs de gorge ou rétro-sternales</li>
-          <li>Une toux inexpliquée</li>
-          <li>Hoquet, éructations fréquentes</li>
-          <li>Érosion dentaire (usure des dents liée à l'acidité)</li>
-        </ul>
-
-        <h2 class="section-title">Conseils alimentaires</h2>
-        <ul>
-          <li>Fractionner les repas et <strong>manger lentement</strong>. Bien mâcher. Éviter les repas trop copieux.</li>
-          <li>Modérer les apports en graisses, surtout le soir.</li>
-          <li>Cuisiner avec peu de sel.</li>
-          <li>Réduire les épices selon votre tolérance personnelle.</li>
-          <li>Ne pas consommer de <strong>boissons gazeuses</strong>. Limiter thé, café, cola.</li>
-          <li>Boire de l'eau plate à température ambiante.</li>
-          <li>Le soir : éviter les soupes, ne pas trop boire (max 1 verre d'eau au dîner), pas de tisane avant le coucher.</li>
-        </ul>
-
-        <div class="two-col" style="margin-top:16px;">
-          <div class="col-red">
-            <h4>🚫 À éviter en excès</h4>
-            <ul>
-              <li>Pain frais, mie de pain fraîche</li>
-              <li>Pâtisseries, biscuits, viennoiseries</li>
-              <li>Céréales complètes</li>
-              <li>Charcuterie (sauf jambon cuit)</li>
-              <li>Plats en sauce, fritures</li>
-              <li>Poissons gras (harengs, sardines, saumon, thon…)</li>
-              <li>Légumes secs (haricots, lentilles, pois cassés)</li>
-              <li>Chou, oignon, concombre, radis, poivrons, oseille</li>
-              <li>Fromages à moisissures (Camembert, Brie, Roquefort…)</li>
-              <li>Agrumes, tomates et leurs jus</li>
-              <li>Eaux gazeuses sucrées, épices fortes</li>
-              <li>Chocolat, graisses en excès</li>
-            </ul>
-          </div>
-          <div class="col-green">
-            <h4>✅ Aliments autorisés</h4>
-            <ul>
-              <li>Carottes, endives, courgettes, haricots verts</li>
-              <li>Épinards, brocolis, fenouil, champignons, aubergines</li>
-              <li>Riz, pâtes, semoule, pommes de terre</li>
-              <li>Pain bien cuit ou grillé</li>
-              <li>Crustacés, fruits de mer</li>
-              <li>Yaourts</li>
-              <li>Thé ou café léger</li>
-              <li>Poires, pommes, pêches, bananes fraîches</li>
-              <li>Eaux plates</li>
-              <li>Vin rouge (occasionnellement au déjeuner)</li>
-            </ul>
-          </div>
-        </div>
-
-        <h2 class="section-title">Conseils positionnels et hygiène de vie</h2>
-        <ul>
-          <li>Ne pas s'allonger, se pencher en avant ou faire des efforts importants juste après les repas</li>
-          <li>Éviter les vêtements trop serrés au niveau abdominal</li>
-          <li>Contrôler son poids (le risque de reflux augmente avec l'excès de poids)</li>
-          <li><strong>Surélevez la tête de votre lit</strong> et dormez sur le dos</li>
-          <li>Pratiquer une activité physique régulière (marches de 40 min minimum, 2 à 3 fois par semaine)</li>
-        </ul>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PAGE : DOSSIER RHUMATOLOGIE
-    ========================================================= -->
-    <section id="page-dossier-rhumato" class="page">
-      <h1 class="page-title">🦴 Dossier Rhumatologie</h1>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">⚡</div>
-          <div><h2>Crise de Goutte</h2><div class="csub">Régime hypo-uricémiant – Ce que je dois savoir</div></div>
-        </div>
-
-        <!-- SVG Pied / goutte -->
-        <div style="text-align:center; margin: 10px 0 18px;">
-          <svg width="110" height="90" viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="45" cy="65" rx="38" ry="20" fill="#f0d9c8"/>
-            <rect x="20" y="40" width="18" height="32" rx="9" fill="#e8c4a0"/>
-            <rect x="40" y="38" width="16" height="34" rx="8" fill="#e8c4a0"/>
-            <rect x="57" y="41" width="14" height="30" rx="7" fill="#e8c4a0"/>
-            <rect x="72" y="44" width="13" height="27" rx="6" fill="#e8c4a0"/>
-            <ellipse cx="29" cy="40" rx="9" ry="9" fill="#e74c3c" opacity="0.85"/>
-            <text x="29" y="44" text-anchor="middle" font-size="11" fill="white" font-weight="bold">!</text>
-            <path d="M29 30 L32 20 L35 24 L38 16 L34 28" fill="#f39c12" stroke="#e67e22" stroke-width="1"/>
-          </svg>
-          <p class="img-caption">Zone d'inflammation caractéristique de la crise de goutte (gros orteil)</p>
-        </div>
-
-        <h2 class="section-title">Aliments à éviter</h2>
-        <div class="important">
-          <ul>
-            <li>Tous les <strong>abats</strong> : ris de veau (surtout), rognons, foie, cervelle, tripes, cœur, langue</li>
-            <li>Les <strong>charcuteries</strong></li>
-            <li>Les <strong>viandes séchées</strong></li>
-            <li>Les extraits de viande (type KUB) et bouillons de viande</li>
-            <li>Certains poissons : <strong>sardines, anchois, hareng, truite, carpe, brochet</strong></li>
-          </ul>
-        </div>
-
-        <h2 class="section-title">Aliments dont la consommation doit être réduite</h2>
-        <p>De façon générale, votre <strong>consommation de viandes doit être diminuée</strong>.</p>
-        <div class="highlight">
-          <strong>Bonne nouvelle :</strong> Aucun végétal ne pose problème. Les purines végétales ne se transforment pas en acide urique. L'oseille, le chou, les épinards et le thé peuvent être consommés sans crainte.
-        </div>
-
-        <h2 class="section-title">Augmenter le débit urinaire</h2>
-        <p>Plus le débit urinaire sera élevé, meilleure sera l'épuration de l'acide urique sanguin par vos reins.</p>
-        <div class="highlight">
-          💧 <strong>Boire beaucoup :</strong> 2 à 3 litres par jour d'eau. N'importe quelle eau convient, y compris l'eau du robinet.
-        </div>
-
-        <h2 class="section-title">Éviter les aliments pouvant déclencher une crise aiguë</h2>
-        <p>Certains aliments peuvent favoriser le déclenchement d'une crise de goutte, même s'ils n'apportent pas eux-mêmes d'acide urique :</p>
-        <ul>
-          <li><strong>L'alcool sous toutes ses formes</strong> → Pas plus de 2 verres par jour</li>
-          <li><strong>Les corps gras</strong> → Pas plus de 40 à 50 g de corps gras d'ajout par jour</li>
-          <li>Certains aliments particuliers à chaque patient (chocolat, champignons…) → À identifier personnellement en mettant en relation vos crises et leur consommation</li>
-        </ul>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PAGE : DOSSIER SUIVI
-    ========================================================= -->
-    <section id="page-dossier-suivi" class="page">
-      <h1 class="page-title">📊 Agendas de suivi</h1>
-
-      <!-- AGENDA DES MIGRAINES -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">🧠</div>
-          <div><h2>Agenda des Migraines</h2><div class="csub">Suivi personnalisé de vos crises migraineuses</div></div>
-        </div>
-
-        <!-- SVG tête migraine -->
-        <div style="text-align:center; margin: 10px 0 18px;">
-          <svg width="110" height="100" viewBox="0 0 110 100" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="55" cy="48" r="35" fill="#f5e6d3" stroke="#ccc" stroke-width="1.5"/>
-            <ellipse cx="55" cy="75" rx="16" ry="8" fill="#e8c4a0"/>
-            <circle cx="44" cy="44" r="4" fill="#2c3e50"/>
-            <circle cx="66" cy="44" r="4" fill="#2c3e50"/>
-            <path d="M45 62 Q55 58 65 62" stroke="#c0392b" stroke-width="2" fill="none"/>
-            <path d="M72 20 L78 8 L82 14 L88 4 L83 18 L87 16 L80 28" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
-            <path d="M65 15 L69 6 L72 10 L76 3 L72 14 L75 13 L70 22" fill="#f39c12" stroke="#e67e22" stroke-width="0.8" opacity="0.8"/>
-          </svg>
-          <p class="img-caption">La crise de migraine se manifeste souvent d'un seul côté du crâne</p>
-        </div>
-
-        <h2 class="section-title">Pourquoi tenir un agenda des migraines ?</h2>
-        <p>Votre médecin vous a remis cet agenda afin que vous puissiez <strong>mieux vous connaître</strong>. Mieux connaître les éléments déclencheurs d'une crise et son déroulement permet de mieux s'y préparer et, si possible, d'en diminuer les effets.</p>
-        <p>Pour votre médecin, cet agenda lui permettra de <strong>mieux connaître votre maladie</strong>, de mieux vous suivre et d'adapter le traitement à votre profil. Ainsi, vous contribuerez ensemble à améliorer votre qualité de vie.</p>
-
-        <h2 class="section-title">Comment remplir l'agenda ?</h2>
-        <p>Le jour où débute une crise, remplissez les cases correspondantes :</p>
-        <ul>
-          <li><strong>Intensité de la crise</strong> : faible, modérée, sévère</li>
-          <li><strong>Symptômes associés</strong> : troubles visuels, nausées, vomissements, sensibilité au bruit, à la lumière…</li>
-          <li><strong>Médicaments pris et dosages</strong></li>
-          <li><strong>Durée de la crise</strong> (en heures et minutes)</li>
-          <li><strong>Remarques</strong> : cycle menstruel, séance de sport, alimentation, stress…</li>
-        </ul>
-
-        <h2 class="section-title">Grille de suivi</h2>
-        <div style="overflow-x:auto;">
-        <table class="migraine-grid">
-          <thead>
-            <tr>
-              <th class="col-date">Date</th>
-              <th>Intensité<br><small>F/M/S</small></th>
-              <th>Troubles<br>visuels</th>
-              <th>Nausées/<br>vomis.</th>
-              <th>Bruit<br>gêne</th>
-              <th>Lumière<br>gêne</th>
-              <th>Traitement<br>et dosage</th>
-              <th>Durée<br>(h/min)</th>
-              <th>Facteurs<br>déclenchants</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="col-date"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="col-date"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="col-date"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="col-date"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="col-date"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td class="col-date"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          </tbody>
-        </table>
-        </div>
-        <p style="font-size:0.8rem; color:#888;">F = Faible · M = Modérée · S = Sévère</p>
-
-        <div class="warning">
-          📅 <strong>N'oubliez pas d'apporter cet agenda lors de votre prochain rendez-vous.</strong>
-        </div>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-
-      <!-- AGENDA DU SOMMEIL -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">😴</div>
-          <div><h2>L'Agenda du Sommeil</h2><div class="csub">Suivi de votre qualité de sommeil sur 3 semaines</div></div>
-        </div>
-
-        <!-- SVG sommeil -->
-        <div style="text-align:center; margin: 10px 0 18px;">
-          <svg width="120" height="90" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
-            <rect width="120" height="90" fill="#1a2a4a" rx="12"/>
-            <path d="M75 20 Q65 30 68 44 Q75 55 88 52 Q78 62 60 58 Q40 54 38 36 Q36 18 55 12 Q66 8 75 20Z" fill="#f4d03f"/>
-            <circle cx="28" cy="18" r="3" fill="white" opacity="0.8"/>
-            <circle cx="95" cy="35" r="2" fill="white" opacity="0.6"/>
-            <circle cx="15" cy="50" r="2.5" fill="white" opacity="0.7"/>
-            <circle cx="105" cy="15" r="1.5" fill="white" opacity="0.5"/>
-            <circle cx="40" cy="72" r="2" fill="white" opacity="0.6"/>
-            <text x="60" y="82" text-anchor="middle" font-size="9" fill="#a8c4e0" font-family="sans-serif">TB · B · Moy · M · TM</text>
-          </svg>
-          <p class="img-caption">Évaluez votre qualité de sommeil chaque matin au réveil</p>
-        </div>
-
-        <h2 class="section-title">Comment le remplir ?</h2>
-        <p>L'agenda se remplit à <strong>deux moments de la journée</strong> :</p>
-        <ul>
-          <li>Le <strong>matin au réveil</strong> pour décrire le déroulement de la nuit</li>
-          <li>Le <strong>soir</strong> pour reporter ce qui s'est passé dans la journée</li>
-        </ul>
-        <div class="important">
-          <strong>⚠️ En aucun cas vous ne devez le remplir durant la nuit</strong> — cela gênerait votre sommeil.
-        </div>
-
-        <h3 class="sub-title">🌅 Le matin, notez :</h3>
-        <ul>
-          <li>La <strong>date</strong> (ex. : nuit du 5 au 6 juin)</li>
-          <li>L'<strong>heure de mise au lit</strong> (flèche vers le bas ↓)</li>
-          <li>L'<strong>heure définitive de lever</strong> (flèche vers le haut ↑) ou un lever en cours de nuit</li>
-          <li>La <strong>zone de sommeil</strong> (hachurez les périodes de sommeil)</li>
-          <li>La <strong>qualité de votre nuit et votre forme au réveil</strong> : TB (Très Bon) / B (Bon) / Moy (Moyen) / M (Mauvais) / TM (Très Mauvais)</li>
-          <li>Les <strong>médicaments pris</strong> ou événements particuliers (sport le soir, fièvre, mal de tête…)</li>
-        </ul>
-
-        <h3 class="sub-title">🌆 Le soir, notez :</h3>
-        <ul>
-          <li>Une <strong>sieste</strong> éventuelle (zone hachurée)</li>
-          <li>Les moments de <strong>somnolence</strong> dans la journée (note « S »)</li>
-          <li>Votre <strong>forme globale dans la journée</strong> : TB / B / Moy / M / TM</li>
-        </ul>
-
-        <div class="highlight">
-          📅 Remplissez cet agenda pendant <strong>3 semaines minimum</strong>. Si possible à la fois sur une période de travail et une période de vacances pour obtenir plus d'informations.
-        </div>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PAGE : DOSSIER DROITS DU PATIENT
-    ========================================================= -->
-    <section id="page-dossier-droits" class="page">
-      <h1 class="page-title">⚖️ Droits du patient</h1>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">📜</div>
-          <div><h2>Vos Directives Anticipées</h2><div class="csub">Exprimer vos souhaits pour votre fin de vie — quand vous le pouvez encore</div></div>
-        </div>
-
-        <div class="highlight" style="text-align:center; padding: 18px;">
-          <strong style="color:#1a5c8a; font-size:1.05rem;">LA BONNE NOUVELLE : FAITES VOS DIRECTIVES ANTICIPÉES QUAND TOUT VA BIEN !</strong><br>
-          <span style="color:#555;">Pas besoin d'être malade. N'importe quel adulte peut les rédiger dès aujourd'hui.<br>
-          C'est plus simple, plus serein — et bien plus utile que d'attendre.</span>
-        </div>
-
-        <h2 class="section-title">1 — Qu'est-ce que les directives anticipées ?</h2>
-        <p>Les directives anticipées sont un <strong>document que vous rédigez vous-même</strong> pour indiquer ce que vous souhaitez comme soins médicaux si vous devenez un jour incapable de vous exprimer.</p>
-        <p>Vous pouvez y préciser :</p>
-        <ul>
-          <li>Voulez-vous être réanimé en cas d'arrêt cardiaque ?</li>
-          <li>Acceptez-vous d'être maintenu en vie artificiellement sans espoir de récupération ?</li>
-          <li>Souhaitez-vous rentrer chez vous pour mourir plutôt qu'à l'hôpital ?</li>
-          <li>Y a-t-il des soins que vous refusez par conviction personnelle ?</li>
-        </ul>
-
-        <div class="important">
-          <strong>Pourquoi est-ce important ?</strong><br>
-          Si vous êtes dans le coma ou incapable de parler, vos médecins sont <strong>légalement obligés de respecter vos directives anticipées</strong>. Sans ce document, ce seront eux — ou votre famille — qui décideront à votre place.
-        </div>
-
-        <h2 class="section-title">2 — Qui peut en rédiger ?</h2>
-        <p>Tout adulte majeur, même en parfaite santé. Pas besoin d'être malade !</p>
-        <ul>
-          <li>Valables <strong>sans limite de durée</strong> · modifiables ou annulables à tout moment</li>
-          <li>Pas obligatoires — c'est votre droit, pas votre devoir</li>
-        </ul>
-
-        <h2 class="section-title">3 — Comment les rédiger ?</h2>
-        <table class="options-table">
-          <tr><th>Option</th><th>Comment faire</th></tr>
-          <tr>
-            <td>Option 1 – Formulaire HAS<br><em style="font-weight:normal;color:#888;">(recommandé)</em></td>
-            <td>Téléchargez sur <a href="https://www.has-sante.fr" target="_blank" class="doctolib-link">www.has-sante.fr</a><br>
-            Deux versions : personne en bonne santé / personne malade<br>
-            Votre médecin peut vous aider</td>
-          </tr>
-          <tr>
-            <td>Option 2 – Rédaction libre</td>
-            <td>Texte manuscrit ou tapé, daté, signé<br>
-            Mentionner nom, prénom, date de naissance<br>
-            Votre médecin peut vous aider à le formuler</td>
-          </tr>
-          <tr>
-            <td>Option 3 – Mon Espace Santé</td>
-            <td>Déposez votre document sur <a href="https://www.monespacesante.fr" target="_blank" class="doctolib-link">www.monespacesante.fr</a><br>
-            Accessible à tous vos médecins en cas d'urgence</td>
-          </tr>
-        </table>
-
-        <h2 class="section-title">4 — Où les conserver ?</h2>
-        <ul>
-          <li>Chez vous, dans un endroit <strong>connu de vos proches</strong></li>
-          <li>Chez votre <strong>médecin traitant</strong></li>
-          <li>Dans votre DMP sur <a href="https://www.monespacesante.fr" target="_blank" class="doctolib-link">Mon Espace Santé</a></li>
-          <li>Chez votre <strong>personne de confiance</strong></li>
-        </ul>
-
-        <h2 class="section-title">5 — La personne de confiance</h2>
-        <p>La personne de confiance est quelqu'un que vous choisissez librement pour vous représenter si vous ne pouvez plus vous exprimer.</p>
-        <ul>
-          <li>Elle <strong>témoigne de vos souhaits</strong> auprès des médecins</li>
-          <li>Elle vous accompagne dans vos démarches médicales si vous le souhaitez</li>
-          <li><strong>Désignation :</strong> document écrit, daté, signé par vous ET par elle</li>
-          <li>Révocable à tout moment — distincte du tuteur légal ou des héritiers</li>
-        </ul>
-        <div class="important">
-          Si vous avez des directives anticipées, elles <strong>s'imposent au médecin</strong> même si votre famille ou votre personne de confiance n'est pas d'accord.<br>
-          Parlez de vos souhaits à vos proches pour éviter les conflits.
-        </div>
-
-        <h2 class="section-title">6 — Et le don d'organe ?</h2>
-        <p>En France depuis 2017, tout le monde est <strong>donneur par défaut</strong> — sauf si vous vous êtes opposé de votre vivant.</p>
-        <ul>
-          <li><strong>Refuser :</strong> inscrivez-vous sur <a href="https://www.registrenationaldesrefus.fr" target="_blank" class="doctolib-link">www.registrenationaldesrefus.fr</a></li>
-          <li><strong>Accepter :</strong> rien à faire — parlez-en simplement à vos proches</li>
-          <li>Don d'organe ≠ DA : deux démarches <strong>distinctes et complémentaires</strong></li>
-        </ul>
-
-        <h2 class="section-title">7 — Vos questions fréquentes</h2>
-        <div class="highlight">
-          <strong style="color:#1a5c8a;">Mes DA seront-elles vraiment respectées ?</strong><br>
-          Oui. Depuis 2016, elles s'imposent au médecin. Il ne peut s'y soustraire que dans des situations d'urgence très limitées après procédure collégiale.
-        </div>
-        <div class="highlight" style="margin-top:10px;">
-          <strong style="color:#1a5c8a;">Combien de temps sont-elles valables ?</strong><br>
-          Sans limite de durée. Vous pouvez les modifier ou les annuler à tout moment.
-        </div>
-        <div class="highlight" style="margin-top:10px;">
-          <strong style="color:#1a5c8a;">Puis-je les rédiger si je suis déjà malade ?</strong><br>
-          Oui, à condition d'être capable d'exprimer votre volonté librement. Un formulaire HAS spécifique existe pour les personnes malades.
-        </div>
-        <div class="highlight" style="margin-top:10px;">
-          <strong style="color:#1a5c8a;">Qui peut m'aider à les rédiger ?</strong><br>
-          Votre médecin traitant est le mieux placé. Tout professionnel de santé de l'ESP du Noyer peut vous orienter et vous remettre les formulaires.
-        </div>
-
-        <h2 class="section-title">Ressources — Scannez les QR codes</h2>
-        <div class="qr-grid">
-          <div class="qr-item">
-            <div id="qr-has"></div>
-            <div class="qr-label">Formulaire HAS</div>
-            <div class="qr-url"><a href="https://www.has-sante.fr" target="_blank">has-sante.fr</a></div>
-          </div>
-          <div class="qr-item">
-            <div id="qr-mes"></div>
-            <div class="qr-label">Mon Espace Santé</div>
-            <div class="qr-url"><a href="https://www.monespacesante.fr" target="_blank">monespacesante.fr</a></div>
-          </div>
-          <div class="qr-item">
-            <div id="qr-da"></div>
-            <div class="qr-label">Infos complètes DA</div>
-            <div class="qr-url"><a href="https://www.has-sante.fr/jcms/c_2831794/fr/directives-anticipees-concernant-les-situations-de-fin-de-vie" target="_blank">has-sante.fr/DA</a></div>
-          </div>
-          <div class="qr-item">
-            <div id="qr-don"></div>
-            <div class="qr-label">Refus don d'organe</div>
-            <div class="qr-url"><a href="https://www.registrenationaldesrefus.fr" target="_blank">registrenationaldesrefus.fr</a></div>
-          </div>
-        </div>
-
-        <div class="ressources-grid">
-          <div class="ressources-box">
-            <h4>📌 Ressources utiles</h4>
-            <ul>
-              <li><a href="https://www.has-sante.fr" target="_blank">Formulaire HAS : has-sante.fr</a></li>
-              <li><a href="https://www.monespacesante.fr" target="_blank">Mon Espace Santé : monespacesante.fr</a></li>
-              <li><a href="https://www.registrenationaldesrefus.fr" target="_blank">Refus don d'organe : registrenationaldesrefus.fr</a></li>
-              <li><a href="https://www.sfap.org" target="_blank">Soins palliatifs : sfap.org</a></li>
-            </ul>
-          </div>
-          <div class="ressources-box">
-            <h4>🏥 L'ESP du Noyer peut vous aider</h4>
-            <ul>
-              <li>Demandez à votre médecin traitant</li>
-              <li>Tout professionnel de santé peut vous orienter</li>
-              <li><strong>→ N'attendez pas d'être malade !</strong></li>
-            </ul>
-          </div>
-        </div>
-
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimer cette fiche</button>
       </div>
     </section>
 
   </main>
 
-  <!-- FOOTER -->
   <footer>
-    <p>🏥 ESP du Noyer – Maison de Santé de Campbon &nbsp;|&nbsp; 2A rue de la Roulais, 44750 Campbon</p>
-    <p>Espace patient sécurisé – Les informations médicales présentes sur ce site sont fournies à titre informatif et ne remplacent pas l'avis de votre médecin.</p>
+    <p>🏥 ESP du Noyer – Maison de Santé de Campbon | 2A rue de la Roulais, 44750 Campbon</p>
+    <p>Espace patient sécurisé – Les informations médicales sont fournies à titre informatif.</p>
   </footer>
-
 </div><!-- /app -->
 
-<!-- ============================================================
-     JAVASCRIPT
-============================================================ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  .page { display: none; }
+  .page.active { display: block; }
+  .specialty-section { margin-bottom: 28px; }
+  .specialty-section h2 { color: #1a5c8a; font-size: 1.15rem; margin-bottom: 12px; padding-bottom: 7px; border-bottom: 2px solid #d0e8f5; }
+</style>
+
 <script>
-  // --- Vérification du mot de passe ---
-  function checkPassword() {
-    var input = document.getElementById('password-input').value;
-    if (input === 'Campbon') {
+  function login() {
+    if (document.getElementById('pwd').value === 'Campbon') {
+      sessionStorage.setItem('esp_auth','1');
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
-      showPage('accueil');
-      autoLink();   // Activation des liens téléphone et Doctolib
-      genQRCodes(); // Génération des QR codes
+      show('accueil');
+      autoLink();
     } else {
-      var err = document.getElementById('login-error');
-      err.style.display = 'block';
-      document.getElementById('password-input').value = '';
-      document.getElementById('password-input').focus();
-      // Petite animation d'erreur
-      var box = document.querySelector('.login-box');
-      box.style.animation = 'none';
-      setTimeout(function() { err.style.display = 'none'; }, 3500);
+      document.getElementById('err').style.display = 'block';
+      document.getElementById('pwd').value = '';
+      setTimeout(function(){ document.getElementById('err').style.display='none'; }, 3000);
     }
   }
+  document.getElementById('pwd').addEventListener('keypress', function(e){ if(e.key==='Enter') login(); });
 
-  // Touche Entrée pour valider le code
-  document.getElementById('password-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') checkPassword();
-  });
+  function show(id) {
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    var t = document.getElementById('page-'+id);
+    if (t) t.classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
 
-  // --- Auto-liens téléphone et Doctolib ---
   function autoLink() {
-    // 1. Numéros de téléphone (format 0X XX XX XX XX)
-    var phoneRegex = /(0\d)(\s\d{2}){4}/g;
-    var phoneSelectors = '.phone, .contact-item span, .team-card, .praticien-card .contact-info span';
-    document.querySelectorAll(phoneSelectors).forEach(function(el) {
-      if (el.querySelector('a')) return; // déjà un lien dedans
-      el.innerHTML = el.innerHTML.replace(phoneRegex, function(match) {
-        var tel = '+33' + match.replace(/\s/g, '').substring(1);
-        return '<a href="tel:' + tel + '" class="tel-link">' + match + '</a>';
+    var phoneRe = /(0\d)(\s\d{2}){4}/g;
+    document.querySelectorAll('.phone, .contact-item span, .team-card').forEach(function(el){
+      if (el.querySelector('a')) return;
+      el.innerHTML = el.innerHTML.replace(phoneRe, function(m){
+        return '<a href="tel:+33'+m.replace(/\s/g,'').substring(1)+'" class="tel-link">'+m+'</a>';
       });
     });
-
-    // 2. Références Doctolib
-    var doctoSelectors = '.details, .contact-item span, .csub, .team-card p';
-    document.querySelectorAll(doctoSelectors).forEach(function(el) {
-      if (el.querySelector('a.doctolib-link')) return;
+    document.querySelectorAll('.details, .contact-item span').forEach(function(el){
+      if (el.querySelector('a.ext-link')) return;
       el.innerHTML = el.innerHTML
-        .replace(/Doctolib\.fr/g,
-          '<a href="https://www.doctolib.fr" target="_blank" class="doctolib-link">Doctolib.fr</a>')
-        .replace(/Rdv sur Doctolib(?!\.fr)/g,
-          'Rdv sur <a href="https://www.doctolib.fr" target="_blank" class="doctolib-link">Doctolib</a>');
+        .replace(/Doctolib\.fr/g,'<a href="https://www.doctolib.fr" target="_blank" class="ext-link">Doctolib.fr</a>')
+        .replace(/Rdv sur Doctolib(?!\.fr)/g,'Rdv sur <a href="https://www.doctolib.fr" target="_blank" class="ext-link">Doctolib</a>');
     });
-
-    // 3. Texte "Doctolib.fr" dans les spans des praticiens (dans <strong>)
-    document.querySelectorAll('.praticien-card .contact-info span strong').forEach(function(el) {
-      if (el.textContent.includes('Doctolib') && !el.querySelector('a')) {
-        var parent = el.parentElement;
-        if (!parent.querySelector('a.doctolib-link')) {
-          parent.innerHTML = parent.innerHTML.replace(
-            /<strong>Doctolib\.fr<\/strong>/g,
-            '<a href="https://www.doctolib.fr" target="_blank" class="doctolib-link"><strong>Doctolib.fr</strong></a>'
-          );
-        }
-      }
-    });
-  }
-
-  // --- Génération des QR codes ---
-  function genQRCodes() {
-    var qrs = [
-      { id: 'qr-has', url: 'https://www.has-sante.fr' },
-      { id: 'qr-mes', url: 'https://www.monespacesante.fr' },
-      { id: 'qr-da',  url: 'https://www.has-sante.fr/jcms/c_2831794/fr/directives-anticipees-concernant-les-situations-de-fin-de-vie' },
-      { id: 'qr-don', url: 'https://www.registrenationaldesrefus.fr' }
-    ];
-    qrs.forEach(function(item) {
-      var el = document.getElementById(item.id);
-      if (el && el.childElementCount === 0) {
-        new QRCode(el, { text: item.url, width: 140, height: 140,
-          colorDark: '#1a5c8a', colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M });
-      }
-    });
-  }
-
-  // --- Navigation entre les pages ---
-  function showPage(pageId) {
-    // Masquer toutes les pages
-    document.querySelectorAll('.page').forEach(function(p) {
-      p.classList.remove('active');
-    });
-    // Afficher la page cible
-    var target = document.getElementById('page-' + pageId);
-    if (target) {
-      target.classList.add('active');
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
-
 </body>
 </html>
